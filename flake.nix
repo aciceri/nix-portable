@@ -18,7 +18,7 @@
 
       lib = inp.nixpkgs.lib;
 
-      supportedSystems = [ "x86_64-linux" "aarch64-linux" "armv7l-linux" ];
+      supportedSystems = [ "x86_64-linux" "aarch64-linux" "armv7l-linux" "riscv64-linux" ];
 
       forAllSystems = f: genAttrs supportedSystems
         (system: f system (import inp.nixpkgs { inherit system; }));
@@ -105,6 +105,15 @@
           # permissions for user namespaces not enabled by default
           excludeRuntimes = [ "bwrap" ];
         };
+
+	# riscv64 tests
+	nixos-riscv64 = {
+	  system = "riscv64-linux";
+	  img = (toString (nixosSystem {
+            system = "riscv64-linux";
+            modules = [(import ./testing/nixos-iso.nix)];
+          }).config.system.build.isoImage) + "/iso/nixos.iso";
+	};
       };
 
       commandsToTest = [
